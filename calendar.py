@@ -117,14 +117,14 @@ async def start_scheduled(bot, ev):
             else:
                 group_data[group_id]['hour'] = int(match.group(1))
                 group_data[group_id]['minute'] = int(match.group(2))
-                update_group_schedule(group_id)
-                save_data()
                 msg = f"推送时间已设置为: {group_data[group_id]['hour']}:{group_data[group_id]['minute']:02d}"
         elif 'status' in cmd:
             msg = f"订阅日历: {group_data[group_id]['server_list']}"
             msg += f"\n推送时间: {group_data[group_id]['hour']}:{group_data[group_id]['minute']:02d}"
         else:
             msg = '指令错误'
+        update_group_schedule(group_id)
+        save_data()
     await bot.send(ev, msg)
 
 '''
