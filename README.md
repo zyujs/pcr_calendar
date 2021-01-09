@@ -4,7 +4,7 @@
 
 项目地址 <https://github.com/zyujs/pcr_calendar>
 
-![calendar](https://user-images.githubusercontent.com/3376669/100040527-70caf300-2e42-11eb-83b6-8139bb4efb93.png)
+![calendar](https://user-images.githubusercontent.com/3376669/104091785-b476a080-52ba-11eb-9d0a-763cb29cc9b6.png)
 
 ## 日程信息源
 
