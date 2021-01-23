@@ -48,7 +48,10 @@ async def send_calendar(group_id):
     for server in group_data[str(group_id)]['server_list']:
         im = await generate_day_schedule(server)
         base64_str = im2base64str(im)
-        msg = f'[CQ:image,file={base64_str}]'
+        if 'cardimage' not in group_data[group_id] or not group_data[group_id]['cardimage']:
+            msg = f'[CQ:image,file={base64_str}]'
+        else:
+            msg = f'[CQ:cardimage,file={base64_str}]'
         for _ in range(5): #失败重试5次
             try:
                 await bot.send_group_msg(group_id=int(group_id), message = msg)
@@ -90,13 +93,17 @@ async def start_scheduled(bot, ev):
     if not cmd:
         im = await generate_day_schedule(server)
         base64_str = im2base64str(im)
-        msg = f'[CQ:image,file={base64_str}]'
+        if 'cardimage' not in group_data[group_id] or not group_data[group_id]['cardimage']:
+            msg = f'[CQ:image,file={base64_str}]'
+        else:
+            msg = f'[CQ:cardimage,file={base64_str}]'
     else:
         if group_id not in group_data:
             group_data[group_id] = {
                 'server_list': [],
                 'hour': 8, 
                 'minute': 0,
+                'cardimage': False,
             }
         if not hoshino.priv.check_priv(ev, hoshino.priv.ADMIN):
             msg = '权限不足'
@@ -121,6 +128,14 @@ async def start_scheduled(bot, ev):
         elif 'status' in cmd:
             msg = f"订阅日历: {group_data[group_id]['server_list']}"
             msg += f"\n推送时间: {group_data[group_id]['hour']}:{group_data[group_id]['minute']:02d}"
+        elif 'cardimage' in cmd:
+            if 'cardimage' not in group_data[group_id] or not group_data[group_id]['cardimage']:
+                group_data[group_id]['cardimage'] = True
+                msg = f'已切换为cardimage模式'
+            else:
+                group_data[group_id]['cardimage'] = False
+                msg = f'已切换为标准image模式'
+            save_data()
         else:
             msg = '指令错误'
         update_group_schedule(group_id)

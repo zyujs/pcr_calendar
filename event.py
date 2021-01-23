@@ -67,7 +67,7 @@ async def load_event_tw():
     return 1
 
 async def load_event_jp():
-    data = await query_data('http://toolscdn.yobot.win/calender/jp.json')
+    data = await query_data('https://cdn.jsdelivr.net/gh/pcrbot/calendar-updater-action@gh-pages/jp.json')
     if data:
         event_data['jp'] = []
         for item in data:
@@ -125,7 +125,7 @@ async def get_events(server, offset, days):
             event['start_days'] = math.ceil((event['start'] - start) / datetime.timedelta(days=1)) #还有几天开始
             event['left_days'] = math.floor((event['end'] - start) / datetime.timedelta(days=1)) #还有几天结束
             events.append(event)
-    events.sort(key=lambda item: item["type"] * 10 - item['left_days'], reverse = True) #按type从大到小 按剩余天数从小到大
+    events.sort(key=lambda item: item["type"] * 100 - item['left_days'], reverse = True) #按type从大到小 按剩余天数从小到大
     return events
 
 
