@@ -35,16 +35,16 @@ async def query_data(url):
     return None
 
 async def load_event_cn():
-    data = await query_data('https://mahomaho-insight.info/cached/gameevents.json')
-    if data and 'cn' in data:
+    data = await query_data('https://cdn.jsdelivr.net/gh/pcrbot/calendar-updater-action@gh-pages/cn.json')
+    if data:
         event_data['cn'] = []
-        for item in data['cn']:
-            start_time = datetime.datetime.strptime(item['start'], r"%Y/%m/%d %H:%M")
-            end_time = datetime.datetime.strptime(item['end'], r"%Y/%m/%d %H:%M")
-            event = {'title': item['title'], 'start': start_time, 'end': end_time, 'type': 1}
+        for item in data:
+            start_time = datetime.datetime.strptime(item['start_time'], r'%Y/%m/%d %H:%M:%S')
+            end_time = datetime.datetime.strptime(item['end_time'], r'%Y/%m/%d %H:%M:%S')
+            event = {'title': item['name'], 'start': start_time, 'end': end_time, 'type': 1}
             if '倍' in event['title']:
                 event['type'] = 2
-            elif item['category'] == 'clanbattle':
+            elif '公会战' in event['title']:
                 event['type'] = 3
             event_data['cn'].append(event)
         return 0
