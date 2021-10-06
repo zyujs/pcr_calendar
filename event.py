@@ -4,7 +4,9 @@ import datetime
 import aiohttp
 import asyncio
 import math
+from .bilibili_calendar import transform_bilibili_calendar
 
+# TODO https://static.biligame.com/pcr/gw/calendar.js
 # type 0普通 1双倍 2 公会战 3 活动
 
 event_data = {
@@ -33,6 +35,29 @@ async def query_data(url):
     except:
         pass
     return None
+
+async def load_event_bilibili():
+    data = ''
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get('https://static.biligame.com/pcr/gw/calendar.js') as resp:
+                data = await resp.text('utf-8')
+                data = transform_bilibili_calendar(data)
+    except:
+        print('解析B站日程表失败')
+    if data:
+        event_data['cn'] = []
+        for item in data:
+            start_time = datetime.datetime.strptime(item['start'], r"%Y/%m/%d %H:%M")
+            end_time = datetime.datetime.strptime(item['end'], r"%Y/%m/%d %H:%M")
+            event = {'title': item['title'], 'start': start_time, 'end': end_time, 'type': 1}
+            if '倍' in event['title']:
+                event['type'] = 2
+            elif '团队战' in event['title']:
+                event['type'] = 3
+            event_data['cn'].append(event)
+        return 0
+    return 1
 
 async def load_event_cn():
     data = await query_data('https://mahomaho-insight.info/cached/gameevents.json')
@@ -84,7 +109,7 @@ async def load_event_jp():
 
 async def load_event(server):
     if server == 'cn':
-        return await load_event_cn()
+        return await load_event_bilibili()
     elif server == 'tw':
         return await load_event_tw()
     elif server == 'jp':
@@ -131,8 +156,7 @@ async def get_events(server, offset, days):
 
 if __name__=='__main__':
     async def main():
-        await load_event_cn()
-        events = await get_events('jp', 0, 1)
+        events = await get_events('cn', 0, 1)
         for event in events:
             print(event)
 

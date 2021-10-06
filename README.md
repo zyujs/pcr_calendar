@@ -8,7 +8,7 @@
 
 ## 日程信息源
 
-- 国服: [MahoMaho INSIGHT!! 真步真步视界术](https://mahomaho-insight.info/)
+- 国服: [国服官网](https://game.bilibili.com/pcr/#p8)
 - 台服: [蘭德索爾圖書館](https://pcredivewiki.tw/)
 - 日服: [https://tools.yobot.win/](https://tools.yobot.win/calender/#jp)
 
