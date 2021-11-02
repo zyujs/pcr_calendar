@@ -10,19 +10,12 @@
 
 - 国服: [国服官网](https://game.bilibili.com/pcr/#p8)
 - 台服: [蘭德索爾圖書館](https://pcredivewiki.tw/)
-- 日服: ~~[https://tools.yobot.win/](https://tools.yobot.win/calender/#jp)~~  [GameWith](https://gamewith.jp/pricone-re/)
+- 日服: [GameWith](https://gamewith.jp/pricone-re/)
 
 ## 安装方法
 
 1. 在HoshinoBot的插件目录modules下clone本项目 `git clone https://github.com/zyujs/pcr_calendar.git`
-1. 在 `config/__bot__.py`的模块列表里加入 `pcr_calendar`  
-1. 安装依赖
-    ```
-    python -m pip install playwright  
-    ```
-    ```  
-    python -m playwright install  
-    ```   
+1. 在 `config/__bot__.py`的模块列表里加入 `pcr_calendar`
 1. 重启HoshinoBot
 
 ## 指令列表

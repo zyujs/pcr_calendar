@@ -5,10 +5,9 @@ import aiohttp
 import asyncio
 import math
 from .bilibili_calendar import transform_bilibili_calendar
-from .gamewith import get_clendar
+from .gamewith_calendar import transform_gamewith_calendar
 
-# TODO https://static.biligame.com/pcr/gw/calendar.js
-# type 0普通 1双倍 2 公会战 3 活动
+# type 0普通 1 活动 2双倍 3 公会战
 
 event_data = {
     'cn': [],
@@ -37,7 +36,6 @@ async def query_data(url):
         pass
     return None
 
-
 async def load_event_bilibili():
     data = ''
     try:
@@ -61,7 +59,6 @@ async def load_event_bilibili():
         return 0
     return 1
 
-
 async def load_event_cn():
     data = await query_data('https://mahomaho-insight.info/cached/gameevents.json')
     if data and 'cn' in data:
@@ -77,7 +74,6 @@ async def load_event_cn():
             event_data['cn'].append(event)
         return 0
     return 1
-
 
 async def load_event_tw():
     data = await query_data('https://pcredivewiki.tw/static/data/event.json')
@@ -95,28 +91,40 @@ async def load_event_tw():
         return 0
     return 1
 
-
 async def load_event_jp():
-    # data = await query_data('https://cdn.jsdelivr.net/gh/pcrbot/calendar-updater-action@gh-pages/jp.json')
-    # if data:
-    #     event_data['jp'] = []
-    #     for item in data:
-    #         start_time = datetime.datetime.strptime(item['start_time'], r'%Y/%m/%d %H:%M:%S')
-    #         end_time = datetime.datetime.strptime(item['end_time'], r'%Y/%m/%d %H:%M:%S')
-    #         event = {'title': item['name'], 'start': start_time, 'end': end_time, 'type': 1}
-    #         if '倍' in event['title']:
-    #             event['type'] = 2
-    #         elif '公会战' in event['title']:
-    #             event['type'] = 3
-    #         event_data['jp'].append(event)
-    #     return 0
-    # return 1
-    data = await get_clendar()
+    data = await query_data('https://cdn.jsdelivr.net/gh/pcrbot/calendar-updater-action@gh-pages/jp.json')
     if data:
-        event_data['jp'] = data
+        event_data['jp'] = []
+        for item in data:
+            start_time = datetime.datetime.strptime(item['start_time'], r'%Y/%m/%d %H:%M:%S')
+            end_time = datetime.datetime.strptime(item['end_time'], r'%Y/%m/%d %H:%M:%S')
+            event = {'title': item['name'], 'start': start_time, 'end': end_time, 'type': 1}
+            if '倍' in event['title']:
+                event['type'] = 2
+            elif '公会战' in event['title']:
+                event['type'] = 3
+            event_data['jp'].append(event)
         return 0
     return 1
 
+async def load_event_gamewith():
+    data = ''
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get('https://gamewith.jp/pricone-re/') as resp:
+                data = await resp.text('utf-8')
+                data = transform_gamewith_calendar(data)
+    except:
+        print('解析gamewith日程表失败')
+    if data:
+        event_data['jp'] = []
+        for item in data:
+            start_time = datetime.datetime.strptime(item['start_time'], r'%Y/%m/%d %H:%M:%S')
+            end_time = datetime.datetime.strptime(item['end_time'], r'%Y/%m/%d %H:%M:%S')
+            event = {'title': item['name'], 'start': start_time, 'end': end_time, 'type': item['type']}
+            event_data['jp'].append(event)
+        return 0
+    return 1
 
 async def load_event(server):
     if server == 'cn':
@@ -124,9 +132,8 @@ async def load_event(server):
     elif server == 'tw':
         return await load_event_tw()
     elif server == 'jp':
-        return await load_event_jp()
+        return await load_event_gamewith()
     return 1
-
 
 def get_pcr_now(offset):
     pcr_now = datetime.datetime.now()
@@ -135,7 +142,6 @@ def get_pcr_now(offset):
     pcr_now = pcr_now.replace(hour=18, minute=0, second=0, microsecond=0) #用晚6点做基准
     pcr_now = pcr_now + datetime.timedelta(days=offset)
     return pcr_now
-
 
 async def get_events(server, offset, days):
     events = []
