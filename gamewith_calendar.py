@@ -2,6 +2,12 @@ import re
 import ast
 import time
 
+translate_list = {
+    'ベリーハード': 'VH',
+    'ハード': '困难',
+    'ノーマル': '普通',
+}
+
 def transform_gamewith_calendar(html_text):
     data_list = re.findall(r"data-calendar='(.*?)'", html_text, re.S)
     event_list = {}
@@ -17,8 +23,11 @@ def transform_gamewith_calendar(html_text):
             type_id = 3
         else:
             type_id = 1;
+        name = event['event_name']
+        for k, v in translate_list.items():
+            name = name.replace(k, v)
         event_list[event['id']] = {
-            'name': event['event_name'],
+            'name': name,
             'start_time': time.strftime("%Y/%m/%d %H:%M:%S", start),
             'end_time': time.strftime("%Y/%m/%d %H:%M:%S", end),
             'type': type_id,

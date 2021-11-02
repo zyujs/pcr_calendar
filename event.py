@@ -45,6 +45,7 @@ async def load_event_bilibili():
                 data = transform_bilibili_calendar(data)
     except:
         print('解析B站日程表失败')
+        return 1
     if data:
         event_data['cn'] = []
         for item in data:
@@ -116,6 +117,7 @@ async def load_event_gamewith():
                 data = transform_gamewith_calendar(data)
     except:
         print('解析gamewith日程表失败')
+        return 1
     if data:
         event_data['jp'] = []
         for item in data:
