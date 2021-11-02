@@ -20,6 +20,7 @@ sv = hoshino.Service('pcr_calendar', help_=HELP_STR, bundle='pcr查询')
 
 group_data = {}
 
+
 def load_data():
     path = os.path.join(os.path.dirname(__file__), 'data.json')
     if not os.path.exists(path):
@@ -32,6 +33,7 @@ def load_data():
     except:
         traceback.print_exc()
 
+
 def save_data():
     path = os.path.join(os.path.dirname(__file__), 'data.json')
     try:
@@ -39,6 +41,7 @@ def save_data():
             json.dump(group_data , f, ensure_ascii=False, indent=2)
     except:
         traceback.print_exc()
+
 
 async def send_calendar(group_id):
     bot = hoshino.get_bot()
@@ -61,6 +64,7 @@ async def send_calendar(group_id):
                 sv.logger.info(f'群{group_id}推送{server}日历失败')
             await asyncio.sleep(60)
 
+
 def update_group_schedule(group_id):
     group_id = str(group_id)
     if group_id not in group_data:
@@ -74,6 +78,7 @@ def update_group_schedule(group_id):
         hour = group_data[group_id]['hour'], 
         minute = group_data[group_id]['minute']
         )
+
 
 @sv.on_rex(r'^([国台日])?服?日[历程](.*)')
 async def start_scheduled(bot, ev):
@@ -147,6 +152,7 @@ async def start_scheduled(bot, ev):
 async def test(bot, ev):
     update_group_schedule(ev.group_id)
 '''
+
 
 @nonebot.on_startup
 async def startup():

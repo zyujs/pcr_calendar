@@ -12,11 +12,13 @@ server_name = {
     'jp': '日服',
 }
 
+
 def im2base64str(im):
     io = BytesIO()
     im.save(io, 'png')
     base64_str = f"base64://{base64.b64encode(io.getvalue()).decode()}"
     return base64_str
+
 
 async def generate_day_schedule(server = 'cn'):
     events = await get_events(server, 0, 7)
@@ -48,4 +50,3 @@ async def generate_day_schedule(server = 'cn'):
                 i += 1
                 draw_item(im, i, event['type'], event['title'], -event['start_days'])
     return im
-    
