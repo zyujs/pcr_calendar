@@ -6,6 +6,9 @@ translate_list = {
     'ベリーハード': 'VH',
     'ハード': '困难',
     'ノーマル': '普通',
+    'ノマクエ': '普通',
+    'ダンジョン': '地下城玛娜',
+    'ルナの塔': '露娜塔',
 }
 
 def transform_gamewith_calendar(html_text):
