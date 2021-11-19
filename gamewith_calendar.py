@@ -9,7 +9,10 @@ translate_list = {
     'ノマクエ': '普通',
     'ダンジョン': '地下城玛娜',
     'ルナの塔': '露娜塔',
+    'クランバトル': '公会战',
+    'プレイヤー': '玩家',
 }
+
 
 def transform_gamewith_calendar(html_text):
     data_list = re.findall(r"data-calendar='(.*?)'", html_text, re.S)
@@ -18,14 +21,14 @@ def transform_gamewith_calendar(html_text):
         event = ast.literal_eval(data)
         start = time.localtime(event['start_time'])
         end = time.localtime(event['end_time'])
-        # gamewith: 1 庆典活动 2 剧情活动 3 露娜塔 4 工会战 5 免费十连
+        # gamewith: 1 庆典活动 2 剧情活动 3 工会战 4 露娜塔 5 复刻活动
         type_id = int(event['color_id'])
         if type_id == 1:
             type_id = 2
-        elif type_id == 4:
+        elif type_id == 3:
             type_id = 3
         else:
-            type_id = 1;
+            type_id = 1
         name = event['event_name']
         for k, v in translate_list.items():
             name = name.replace(k, v)
@@ -36,6 +39,7 @@ def transform_gamewith_calendar(html_text):
             'type': type_id,
             }
     return list(event_list.values())
+
 
 '''
 fp = open('gamewith.html', encoding='utf-8')
