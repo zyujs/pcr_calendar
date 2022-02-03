@@ -37,7 +37,7 @@ def transform_gamewith_calendar(html_text):
             'start_time': time.strftime("%Y/%m/%d %H:%M:%S", start),
             'end_time': time.strftime("%Y/%m/%d %H:%M:%S", end),
             'type': type_id,
-            }
+        }
     return list(event_list.values())
 
 

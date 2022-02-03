@@ -20,6 +20,7 @@ sv = hoshino.Service('pcr_calendar', help_=HELP_STR, bundle='pcr查询')
 
 group_data = {}
 
+
 def load_data():
     path = os.path.join(os.path.dirname(__file__), 'data.json')
     if not os.path.exists(path):
@@ -32,13 +33,15 @@ def load_data():
     except:
         traceback.print_exc()
 
+
 def save_data():
     path = os.path.join(os.path.dirname(__file__), 'data.json')
     try:
         with open(path, 'w', encoding='utf8') as f:
-            json.dump(group_data , f, ensure_ascii=False, indent=2)
+            json.dump(group_data, f, ensure_ascii=False, indent=2)
     except:
         traceback.print_exc()
+
 
 async def send_calendar(group_id):
     bot = hoshino.get_bot()
@@ -52,28 +55,22 @@ async def send_calendar(group_id):
             msg = f'[CQ:image,file={base64_str}]'
         else:
             msg = f'[CQ:cardimage,file={base64_str}]'
-        for _ in range(5): #失败重试5次
+        for _ in range(5):  #失败重试5次
             try:
-                await bot.send_group_msg(group_id=int(group_id), message = msg)
+                await bot.send_group_msg(group_id=int(group_id), message=msg)
                 sv.logger.info(f'群{group_id}推送{server}日历成功')
                 break
             except:
                 sv.logger.info(f'群{group_id}推送{server}日历失败')
             await asyncio.sleep(60)
 
+
 def update_group_schedule(group_id):
     group_id = str(group_id)
     if group_id not in group_data:
         return
-    nonebot.scheduler.add_job(
-        send_calendar, 
-        'cron', 
-        args = (group_id,), 
-        id = f'calendar_{group_id}', 
-        replace_existing = True, 
-        hour = group_data[group_id]['hour'], 
-        minute = group_data[group_id]['minute']
-        )
+    nonebot.scheduler.add_job(send_calendar, 'cron', args=(group_id, ), id=f'calendar_{group_id}', replace_existing=True, hour=group_data[group_id]['hour'], minute=group_data[group_id]['minute'])
+
 
 @sv.on_rex(r'^([国台日])?服?日[历程](.*)')
 async def start_scheduled(bot, ev):
@@ -93,15 +90,19 @@ async def start_scheduled(bot, ev):
     if not cmd:
         im = await generate_day_schedule(server)
         base64_str = im2base64str(im)
-        if 'cardimage' not in group_data[group_id] or not group_data[group_id]['cardimage']:
-            msg = f'[CQ:image,file={base64_str}]'
-        else:
-            msg = f'[CQ:cardimage,file={base64_str}]'
+        msg = f'[CQ:image,file={base64_str}]'
+        try:
+            if 'cardimage' not in group_data[group_id] or not group_data[group_id]['cardimage']:
+                pass
+            else:
+                msg = f'[CQ:cardimage,file={base64_str}]'
+        except:
+            pass
     else:
         if group_id not in group_data:
             group_data[group_id] = {
                 'server_list': [],
-                'hour': 8, 
+                'hour': 8,
                 'minute': 0,
                 'cardimage': False,
             }
@@ -118,7 +119,7 @@ async def start_scheduled(bot, ev):
             save_data()
             msg = f'{server}日程推送已关闭'
         elif 'time' in cmd:
-            match = re.search( r'(\d*):(\d*)', cmd)
+            match = re.search(r'(\d*):(\d*)', cmd)
             if not match or len(match.groups()) < 2:
                 msg = '请指定推送时间'
             else:
@@ -142,11 +143,13 @@ async def start_scheduled(bot, ev):
         save_data()
     await bot.send(ev, msg)
 
+
 '''
 @sv.on_fullmatch('test')
 async def test(bot, ev):
     update_group_schedule(ev.group_id)
 '''
+
 
 @nonebot.on_startup
 async def startup():
