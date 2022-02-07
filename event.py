@@ -27,7 +27,6 @@ lock = {
     'jp': asyncio.Lock(),
 }
 
-
 async def query_data(url):
     try:
         async with aiohttp.ClientSession() as session:
@@ -36,7 +35,6 @@ async def query_data(url):
     except:
         pass
     return None
-
 
 async def load_event_bilibili():
     data = ''
@@ -62,7 +60,6 @@ async def load_event_bilibili():
         return 0
     return 1
 
-
 async def load_event_cn():
     data = await query_data('https://mahomaho-insight.info/cached/gameevents.json')
     if data and 'cn' in data:
@@ -78,7 +75,6 @@ async def load_event_cn():
             event_data['cn'].append(event)
         return 0
     return 1
-
 
 async def load_event_tw():
     data = await query_data('https://pcredivewiki.tw/static/data/event.json')
@@ -96,7 +92,6 @@ async def load_event_tw():
         return 0
     return 1
 
-
 async def load_event_jp():
     data = await query_data('https://cdn.jsdelivr.net/gh/pcrbot/calendar-updater-action@gh-pages/jp.json')
     if data:
@@ -112,7 +107,6 @@ async def load_event_jp():
             event_data['jp'].append(event)
         return 0
     return 1
-
 
 async def load_event_gamewith():
     data = ''
@@ -134,7 +128,6 @@ async def load_event_gamewith():
         return 0
     return 1
 
-
 async def load_event(server):
     if server == 'cn':
         return await load_event_bilibili()
@@ -144,22 +137,20 @@ async def load_event(server):
         return await load_event_gamewith()
     return 1
 
-
 def get_pcr_now(offset):
     pcr_now = datetime.datetime.now()
     if pcr_now.hour < 5:
         pcr_now -= datetime.timedelta(days=1)
-    pcr_now = pcr_now.replace(hour=18, minute=0, second=0, microsecond=0)  #用晚6点做基准
+    pcr_now = pcr_now.replace(hour=18, minute=0, second=0, microsecond=0) #用晚6点做基准
     pcr_now = pcr_now + datetime.timedelta(days=offset)
     return pcr_now
-
 
 async def get_events(server, offset, days):
     events = []
     pcr_now = datetime.datetime.now()
     if pcr_now.hour < 5:
         pcr_now -= datetime.timedelta(days=1)
-    pcr_now = pcr_now.replace(hour=18, minute=0, second=0, microsecond=0)  #用晚6点做基准
+    pcr_now = pcr_now.replace(hour=18, minute=0, second=0, microsecond=0) #用晚6点做基准
 
     await lock[server].acquire()
     try:
@@ -169,22 +160,22 @@ async def get_events(server, offset, days):
                 event_updated[server] = t
     finally:
         lock[server].release()
+        
 
     start = pcr_now + datetime.timedelta(days=offset)
     end = start + datetime.timedelta(days=days)
     end -= datetime.timedelta(hours=18)  #晚上12点结束
 
     for event in event_data[server]:
-        if end > event['start'] and start < event['end']:  #在指定时间段内 已开始 且 未结束
-            event['start_days'] = math.ceil((event['start'] - start) / datetime.timedelta(days=1))  #还有几天开始
-            event['left_days'] = math.floor((event['end'] - start) / datetime.timedelta(days=1))  #还有几天结束
+        if end > event['start'] and start < event['end']: #在指定时间段内 已开始 且 未结束
+            event['start_days'] = math.ceil((event['start'] - start) / datetime.timedelta(days=1)) #还有几天开始
+            event['left_days'] = math.floor((event['end'] - start) / datetime.timedelta(days=1)) #还有几天结束
             events.append(event)
-    events.sort(key=lambda item: item["type"] * 100 - item['left_days'], reverse=True)  #按type从大到小 按剩余天数从小到大
+    events.sort(key=lambda item: item["type"] * 100 - item['left_days'], reverse = True) #按type从大到小 按剩余天数从小到大
     return events
 
 
-if __name__ == '__main__':
-
+if __name__=='__main__':
     async def main():
         events = await get_events('cn', 0, 1)
         for event in events:
