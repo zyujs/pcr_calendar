@@ -90,6 +90,13 @@ async def start_scheduled(bot, ev):
     else:
         server = 'cn'
     cmd = ev['match'].group(2)
+    if group_id not in group_data:
+        group_data[group_id] = {
+            'server_list': [],
+            'hour': 8,
+            'minute': 0,
+            'cardimage': False,
+        }
     if not cmd:
         im = await generate_day_schedule(server)
         base64_str = im2base64str(im)
@@ -98,13 +105,6 @@ async def start_scheduled(bot, ev):
         else:
             msg = f'[CQ:cardimage,file={base64_str}]'
     else:
-        if group_id not in group_data:
-            group_data[group_id] = {
-                'server_list': [],
-                'hour': 8, 
-                'minute': 0,
-                'cardimage': False,
-            }
         if not hoshino.priv.check_priv(ev, hoshino.priv.ADMIN):
             msg = '权限不足'
         elif 'on' in cmd:
