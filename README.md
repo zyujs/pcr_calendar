@@ -8,7 +8,7 @@
 
 ## 日程信息源
 
-- 国服: [国服官网](https://game.bilibili.com/pcr/#p8)
+- 国服: [国服官网](https://game.bilibili.com/pcr/#p8)  [pcrbot](https://pcrbot.github.io/pcr-calendar/#cn)
 - 台服: [蘭德索爾圖書館](https://pcredivewiki.tw/)
 - 日服: [GameWith](https://gamewith.jp/pricone-re/)
 

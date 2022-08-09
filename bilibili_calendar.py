@@ -2,6 +2,7 @@ from os import truncate
 import re
 import ast
 from html.parser import HTMLParser
+import datetime
 
 
 keyword_list = [
@@ -68,6 +69,8 @@ def extract_calendar_data(js_text):
 def transform_calendar_data(data):
     event_cache = {}
     event_list = []
+    today = datetime.date(datetime.date.today().year, datetime.date.today().month, datetime.date.today().day)
+    lead = -100
     for i in range(len(data)):
         for day_str in data[i]['day']:
             #print(data[i]['year'], data[i]['month'], day_str, data[i]['day'][day_str])
@@ -75,6 +78,7 @@ def transform_calendar_data(data):
             year = int(data[i]['year'])
             month = int(data[i]['month'])
             day = int(day_str)
+
             for keyword in event_keyword_list:
                 end_time = '23:59'
                 if keyword == 'qdhd':
@@ -107,6 +111,11 @@ def transform_calendar_data(data):
                         'end': f'{event_cache[event_name]["end_year"]}/{event_cache[event_name]["end_month"]}/{event_cache[event_name]["end_day"]} {event_cache[event_name]["end_time"]}',
                     })
                     event_cache.pop(event_name)
+                    diff = (datetime.date(year, month, day) - today) / datetime.timedelta(1)
+                    if diff > lead:
+                        lead = diff
+    if lead < 0:
+        return []
     return event_list
 
 
