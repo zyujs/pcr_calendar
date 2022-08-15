@@ -70,7 +70,6 @@ def transform_calendar_data(data):
     event_cache = {}
     event_list = []
     today = datetime.date(datetime.date.today().year, datetime.date.today().month, datetime.date.today().day)
-    lead = -100
     for i in range(len(data)):
         for day_str in data[i]['day']:
             #print(data[i]['year'], data[i]['month'], day_str, data[i]['day'][day_str])
@@ -78,12 +77,13 @@ def transform_calendar_data(data):
             year = int(data[i]['year'])
             month = int(data[i]['month'])
             day = int(day_str)
-
+            event_number = 0
             for keyword in event_keyword_list:
                 end_time = '23:59'
                 if keyword == 'qdhd':
                     end_time = '04:59'
                 for event_name in data[i]['day'][day_str][keyword]:
+                    event_number = event_number + 1
                     if event_name not in event_cache.keys():
                         #event_cache[event_name] = {'year': year, 'month': month, 'day': int(day)}
                         event_cache[event_name] = {
@@ -95,6 +95,9 @@ def transform_calendar_data(data):
                             'end_day': day,
                             'end_time': end_time,
                         }
+            diff = (datetime.date(year, month, day) - today) / datetime.timedelta(1)
+            if diff == 0 and event_number == 0: #无今日数据
+                return []
             for event_name in list(event_cache.keys()):
                 is_active = False 
                 for keyword in event_keyword_list:
@@ -111,11 +114,6 @@ def transform_calendar_data(data):
                         'end': f'{event_cache[event_name]["end_year"]}/{event_cache[event_name]["end_month"]}/{event_cache[event_name]["end_day"]} {event_cache[event_name]["end_time"]}',
                     })
                     event_cache.pop(event_name)
-                    diff = (datetime.date(year, month, day) - today) / datetime.timedelta(1)
-                    if diff > lead:
-                        lead = diff
-    if lead < 0:
-        return []
     return event_list
 
 
