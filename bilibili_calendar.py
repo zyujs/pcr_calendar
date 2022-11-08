@@ -55,6 +55,7 @@ def parse_content(day_content):
 def extract_calendar_data(js_text):
     # 提取js的data部分转换为python对象
     data_str = re.search(r'\[.*?\]', js_text, re.S).group(0)
+    data_str = data_str.replace('//', '#')
     for keyword in keyword_list:
         data_str = data_str.replace(keyword, f'"{keyword}"')
     data = ast.literal_eval(data_str)
@@ -95,7 +96,10 @@ def transform_calendar_data(data):
                             'end_day': day,
                             'end_time': end_time,
                         }
-            diff = (datetime.date(year, month, day) - today) / datetime.timedelta(1)
+            try:
+                diff = (datetime.date(year, month, day) - today) / datetime.timedelta(1)
+            except:
+                continue
             if diff == 0 and event_number == 0: #无今日数据
                 return []
             for event_name in list(event_cache.keys()):
