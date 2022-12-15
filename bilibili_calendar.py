@@ -118,6 +118,12 @@ def transform_calendar_data(data):
                         'end': f'{event_cache[event_name]["end_year"]}/{event_cache[event_name]["end_month"]}/{event_cache[event_name]["end_day"]} {event_cache[event_name]["end_time"]}',
                     })
                     event_cache.pop(event_name)
+    for event_name in list(event_cache.keys()):
+        event_list.append({
+            'title': event_name,
+            'start': f'{event_cache[event_name]["start_year"]}/{event_cache[event_name]["start_month"]}/{event_cache[event_name]["start_day"]} 05:00',
+            'end': f'{event_cache[event_name]["end_year"]}/{event_cache[event_name]["end_month"]}/{event_cache[event_name]["end_day"]} {event_cache[event_name]["end_time"]}',
+        })
     return event_list
 
 
