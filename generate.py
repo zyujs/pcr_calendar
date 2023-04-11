@@ -19,7 +19,13 @@ def im2base64str(im):
     return base64_str
 
 async def generate_day_schedule(server = 'cn'):
-    events = await get_events(server, 0, 7)
+    if server == 'cn':
+        events = await get_events('cn', 0, 7)
+        eventsb = await get_events('cnb', 0, 7)
+        if len(events) < len(eventsb):
+            events = eventsb
+    else:
+        events = await get_events(server, 0, 7)
 
     has_prediction = False
     title_len = 25

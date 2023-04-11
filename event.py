@@ -11,18 +11,21 @@ from .gamewith_calendar import transform_gamewith_calendar
 
 event_data = {
     'cn': [],
+    'cnb': [],
     'tw': [],
     'jp': [],
 }
 
 event_updated = {
     'cn': '',
+    'cnb': '',
     'tw': '',
     'jp': '',
 }
 
 lock = {
     'cn': asyncio.Lock(),
+    'cnb': asyncio.Lock(),
     'tw': asyncio.Lock(),
     'jp': asyncio.Lock(),
 }
@@ -50,7 +53,7 @@ async def load_event_bilibili():
         if len(data) == 0:
             print('B站日程表无数据')
             return 1
-        event_data['cn'] = []
+        event_data['cnb'] = []
         for item in data:
             start_time = datetime.datetime.strptime(item['start'], r"%Y/%m/%d %H:%M")
             end_time = datetime.datetime.strptime(item['end'], r"%Y/%m/%d %H:%M")
@@ -59,7 +62,7 @@ async def load_event_bilibili():
                 event['type'] = 2
             elif '团队战' in event['title']:
                 event['type'] = 3
-            event_data['cn'].append(event)
+            event_data['cnb'].append(event)
         return 0
     return 1
 
@@ -132,12 +135,10 @@ async def load_event_gamewith():
     return 1
 
 async def load_event(server):
-    if server == 'cn':
-        ret = await load_event_bilibili()
-        if ret != 0:
-            return await load_event_cn()
-        else:
-            return ret
+    if server == 'cnb':
+        return await load_event_bilibili()
+    elif server == 'cn':
+        return await load_event_cn()
     elif server == 'tw':
         return await load_event_tw()
     elif server == 'jp':
